@@ -424,9 +424,9 @@ const creerEnteteVol = () => {
 
 };
 
-const creerLigneVol = () => {
+const creerLigneVol = (vols) => {
     document.querySelector("#tbody").textContent="";
-   
+    vols.map(vol => {
     // Creation des elements
     var tr = document.createElement("tr")
     var td1 = document.createElement("td")
@@ -435,6 +435,7 @@ const creerLigneVol = () => {
     var td4 = document.createElement("td")
     var td5 = document.createElement("td")
     var td6 = document.createElement("td")
+    var ta0 = document.createElement("textarea")
     var ta1 = document.createElement("textarea")
     var ta2 = document.createElement("textarea")
     var ta3 = document.createElement("textarea")
@@ -447,10 +448,13 @@ const creerLigneVol = () => {
 
     // Ajout des classes
     tr.classList.add("line")
+    ta0.classList.add("textarea")
     ta1.classList.add("textarea")
     ta2.classList.add("textarea")
     ta3.classList.add("textarea")
     ta4.classList.add("textarea")
+    ta1.classList.add("textarea")
+    ta0.disabled=true
     ta1.disabled=true
     ta2.disabled=true
     ta3.disabled=true
@@ -460,14 +464,16 @@ const creerLigneVol = () => {
     i1.classList.add("mdi","mdi-auto-fix") 
     i2.classList.add("mdi","mdi","mdi-delete") 
     // Ajout des valeurs
-    ta1.textContent="Compagnie"
-    ta2.textContent="A. Départ"
-    ta3.textContent="A. Arrivee"
-    ta4.textContent="Durée"
-    img.src=""
+    ta0.textContent=vol.compagnie
+    ta1.textContent=vol.aeroport_depart
+    ta2.textContent=vol.aeroport_arrivee
+    ta3.textContent=vol.duree_vol
+    ta4.textContent=vol.escale
+    img.src=vol.image
     label1.appendChild(i1);
     label2.appendChild(i2);
     td1.appendChild(img);
+    td1.appendChild(ta0);
     td2.appendChild(ta1);
     td3.appendChild(ta2);
     td4.appendChild(ta3);
@@ -480,7 +486,32 @@ const creerLigneVol = () => {
     tr.appendChild(td4);
     tr.appendChild(td5);
     tr.appendChild(td6);
+
+    //Ajout des evenements
+    tr.addEventListener("dblclick",()=>{
+        var childElements = tr.querySelectorAll('.textarea');
+        childElements.forEach(function(element) {
+            element.disabled = false;
+        });
+        
+        })
+    tr.addEventListener("mouseleave",()=>{
+            var childElements = tr.querySelectorAll('.textarea');
+            childElements.forEach(function(element) {
+                element.disabled = true;
+            });
+            
+            })
+    
+    tr.querySelector('.modification').addEventListener("click",()=>{
+        var childElements = tr.querySelectorAll('.textarea');
+        childElements.forEach(function(element) {
+            element.disabled = false;
+        });
+    })
+
     document.querySelector("#tbody").appendChild(tr);
+    })
 
 
 };
@@ -542,18 +573,44 @@ const creerLigneHotel = (hotels) => {
     tr.appendChild(td4);
     tr.appendChild(td5);
     tr.appendChild(td6);
+
+     //Ajout des evenements
+     tr.addEventListener("dblclick",()=>{
+        var childElements = tr.querySelectorAll('.textarea');
+        childElements.forEach(function(element) {
+            element.disabled = false;
+        });
+        
+        })
+    tr.addEventListener("mouseleave",()=>{
+            var childElements = tr.querySelectorAll('.textarea');
+            childElements.forEach(function(element) {
+                element.disabled = true;
+            });
+            
+            })
+    
+    tr.querySelector('.modification').addEventListener("click",()=>{
+        var childElements = tr.querySelectorAll('.textarea');
+        childElements.forEach(function(element) {
+            element.disabled = false;
+        });
+    })
     document.querySelector("#tbody").appendChild(tr);
     })
 
 };
-// creerEnteteVol();
-//creerLigneHotel();
+
+
+
+// getHotels().then(hotels => {
+//     creerLigneHotel(hotels)
+// });
 
 getHotels().then(hotels => {
-    creerLigneHotel(hotels)
-});
-
-
+    document.querySelector("#tbody").textContent="";
+    creerLigneHotel(hotels);
+ });
 document.querySelectorAll('.line')?.forEach(ligne=>{
    
     ligne.addEventListener("dblclick",()=>{
@@ -582,3 +639,25 @@ document.querySelectorAll('.line')?.forEach(ligne=>{
 }
 
 )
+
+document.getElementById('vol_tab')?.addEventListener("click",()=>{
+    creerEnteteVol();
+    document.querySelector("#tbody").textContent="";
+    getVols().then(vols => {
+        creerLigneVol(vols);
+     });
+})
+document.getElementById('hotel_tab')?.addEventListener("click",()=>{
+    creerEnteteHotel();
+    document.querySelector("#tbody").textContent="";
+    getHotels().then(hotels => {
+        
+        creerLigneHotel(hotels);
+     });
+})
+// document.getElementById('croisiere_tab')?.addEventListener("click",()=>{
+//     document.querySelector("#content").textContent="";
+//     getCroisieres().then(Croisieres => {
+//         creerCarteCroisiere(Croisieres)
+//     });
+// })
