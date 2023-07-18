@@ -52,6 +52,29 @@ textarea{
   background-color: #bccfeb;
   overflow-y: scroll;
 }
+.modification,.suppression{
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 3px;
+}
+.modification:hover,.suppression:hover{
+  border: 10px;
+}
+.line.supprime,.line.supprime:hover{
+  background-color: rgba(241, 163, 163, 0.658);
+  pointer-events: none;
+}
+.line.supprime td label{
+  display: none;
+}
+.line.modifie,.line.modifie:hover{
+  background-color: rgba(169, 241, 163, 0.658);
+  pointer-events: none;
+}
+.line.modifie td label{
+  display: none;
+}
+
 @-webkit-keyframes flash {
   0% {
     opacity: 1; }
