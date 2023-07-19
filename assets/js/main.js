@@ -16,6 +16,48 @@ const getCroisieres = async () => {
     return croisieres;
 };
 
+const demandeSuppressionHotel = async (id) => {
+    const url = `http://localhost:3000/hotel/suppression/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            console.log(`Hôtel avec l'ID ${id} supprimé avec succès.`);
+            VerifieSuppression();
+        } else {
+            console.error(`Erreur lors de la suppression de l'hôtel avec l'ID ${id}.`);
+        }
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la suppression de l\'hôtel :', error);
+    }
+};
+
+const demandemodificationHotel = async (hotelData) => {
+    const url = 'http://localhost:3000/hotel/modification';
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(hotelData)
+        });
+
+        if (response.ok) {
+            const newHotel = await response.json();
+            console.log('Nouvel hôtel créé avec succès :', newHotel);
+            VerifieModification();
+        } else {
+            console.error('Erreur lors de la création de l\'hôtel.');
+        }
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la création de l\'hôtel :', error);
+    }
+};
 
 const creerCarteHotel = (hotels) => {
     hotels.map(hotel => {
@@ -510,6 +552,13 @@ const creerLigneVol = (vols) => {
             });
         })
 
+        tr.querySelector('.suppression').addEventListener("click", () => {
+            var childElements = tr.querySelectorAll('.textarea');
+            childElements.forEach(function (element) {
+                element.disabled = false;
+            });
+        })
+
         document.querySelector("#tbody").appendChild(tr);
     })
 
@@ -517,6 +566,9 @@ const creerLigneVol = (vols) => {
 };
 
 const creerLigneHotel = (hotels) => {
+    var selectionner;
+    var encours;
+    VerifieModification();
     document.querySelector("#tbody").textContent = "";
     hotels.map(hotel => {
 
@@ -552,6 +604,7 @@ const creerLigneHotel = (hotels) => {
         ta2.classList.add("localisation")
         ta3.classList.add("prix")
         ta4.classList.add("note")
+        img.classList.add("photo")
         label1.classList.add('badge-success', 'rounded', 'modification')
         label2.classList.add('badge-danger', 'rounded', 'suppression')
         i1.classList.add("mdi", "mdi-auto-fix")
@@ -583,41 +636,90 @@ const creerLigneHotel = (hotels) => {
 
         //Ajout des evenements
         tr.addEventListener("dblclick", () => {
+            
             var childElements = tr.querySelectorAll('.textarea');
             childElements.forEach(function (element) {
                 element.disabled = false;
+                var id = tr.querySelector('.suppression').id
+                var nom = tr.querySelector('.nom').textContent
+                var localisation = tr.querySelector('.localisation').textContent
+                var prix = tr.querySelector('.prix').textContent
+                var note = tr.querySelector('.note').textContent
+                selectionner= {
+                    "id" : id, 
+                    "nom": nom,
+                    "localisation": localisation, 
+                    "prix" : prix, 
+                    "note" : note
+                }
+                
             });
-
+            console.log(selectionner.id)
         })
+
         tr.addEventListener("mouseleave", () => {
             var childElements = tr.querySelectorAll('.textarea');
             childElements.forEach(function (element) {
                 element.disabled = true;
             });
+            var id = tr.querySelector('.suppression')?.id
+            var nom = tr.querySelector('.nom').value
+            var localisation = tr.querySelector('.localisation').value
+            var prix = tr.querySelector('.prix').value
+            var note = tr.querySelector('.note').value
+            var photo = tr.querySelector('.photo').src
+        
+            if(selectionner?.id==id){
+                if(nom!=selectionner.nom || localisation !=selectionner.localisation || prix != selectionner.prix || note!=selectionner.note){
+                    console.log('il y a eu mofifications !!')
+                    const hotelData = {
+                        "id_hotel": parseInt(id),
+                        "nom": nom,
+                        "localisation": localisation,
+                        "prix": parseInt(prix),
+                        "note": note,
+                        "photo":photo
+                      };
+                    demandemodificationHotel(hotelData);
 
+                }
+                else{
+                    console.log('Aucune mofifications !!')
+                    console.log(id,nom,localisation,prix,note)
+                }
+            }
         })
 
         tr.querySelector('.modification').addEventListener("click", () => {
+
             var childElements = tr.querySelectorAll('.textarea');
             childElements.forEach(function (element) {
                 element.disabled = false;
+                var id = tr.querySelector('.suppression').id
+                var nom = tr.querySelector('.nom').textContent
+                var localisation = tr.querySelector('.localisation').textContent
+                var prix = tr.querySelector('.prix').textContent
+                var note = tr.querySelector('.note').textContent
+                selectionner= {
+                    "id" : id, 
+                    "nom": nom,
+                    "localisation": localisation, 
+                    "prix" : prix, 
+                    "note" : note,
+                   
+                }
             });
+
         })
+
         tr.querySelector('.suppression').addEventListener("click", () => {
             var id = tr.querySelector('.suppression').id
-            var nom = tr.querySelector('.nom').textContent
-            var localisation = tr.querySelector('.localisation').textContent
-            var prix = tr.querySelector('.prix').textContent
-            var note = tr.querySelector('.note').textContent
-            console.log(id, nom, localisation, prix, note)
-            // var childElements = tr.querySelectorAll('.textarea');
-            // childElements.forEach(function(element) {
-            //     element.disabled = false;
-            // });
+            demandeSuppressionHotel(id)
         })
         document.querySelector("#tbody").appendChild(tr);
     })
-
+    VerifieSuppression();
+    VerifieModification();
 };
 
 
@@ -686,27 +788,36 @@ const getSuppression = async () => {
     const idsSuppression = suppressions.map(element => element.id_element);
     return idsSuppression;
 };
+
+const getModification = async () => {
+    const response = await fetch("http://localhost:3000/hotel/modification");
+    const suppressions = await response.json();
+    const idsSuppression = suppressions.map(element => element.id_hotel);
+    return idsSuppression;
+};
+
 const VerifieSuppression = () => {
     getSuppression().then(element => {
-
-        console.log(element)
         for (const id of element) {
-            //console.log(document.getElementsByClassName('tr.line'));
+            document.querySelector('.line[id="' + id + '"]').classList.add("supprime")
         }
+    })
+};
 
-        // document.querySelectorAll('.line')?.forEach(line => {
-        //     var id = line.id
-        //     console.log('1')
-        //     if (element.include(parseInt(id))) {
-        //         line.classList.add('supprime')
-        //     }
-        // })
+const VerifieModification = () => {
+    getModification().then(element => {
+        for (const id of element) {
+            document.querySelector('.line[id="'+ id +'"]')?.classList.add("modifie")
+        }
     })
 };
 getHotels().then(hotels => {
     document.querySelector("#tbody").textContent = "";
     creerLigneHotel(hotels);
+    VerifieSuppression();
+    VerifieModification();
 });
-VerifieSuppression();
+
+
 
 
