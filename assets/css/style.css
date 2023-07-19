@@ -44,6 +44,14 @@
   color: #000;
   font-size: larger;
 }
+.barree {
+  text-decoration: line-through;
+  color: red
+}
+.correct{
+  color: rgb(10, 170, 10);
+  font-weight: 600;
+}
 textarea{
   width: 100%;
 }
