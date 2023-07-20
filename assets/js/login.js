@@ -15,9 +15,7 @@ const login = async (user) => {
 
         if (response.ok) {
             const token = await response.json();
-            localStorage.setItem('accessToken', token);
-            const decodedToken = parseJwt(token);
-            
+            localStorage.setItem('accessToken', JSON.stringify(token));
             console.log("login success")
             return true;
             
@@ -36,6 +34,25 @@ const login = async (user) => {
     }
 };
 
+const getInfoUser = async (token) => {
+    const url = `http://localhost:3000/auth/token`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: token
+        });
+
+        const info = await response.json();
+        return info ;
+    } catch (error) {
+        console.error('Une erreur s\'est produite lors de la recuperation :', error);
+    }
+};
+
 
   var loginForm = document.getElementById('loginForm');
   loginForm?.addEventListener('submit', function(event) {
@@ -47,7 +64,17 @@ const login = async (user) => {
     login(user).then(response=>{
         console.log(response)
          if(response){
-            // window.location.href = 'editeur.html';
+            const token=localStorage.getItem('accessToken')
+            getInfoUser(token).then(info=>{
+                console.log(info)
+                if(info.isadmin==true){
+                    window.location.href = 'admin.html';
+                }
+                else{
+                    window.location.href = 'editeur.html';
+                }
+            })
+            
         }
         else {
             document.getElementById('error-message').textContent = error.message
