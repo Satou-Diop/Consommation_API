@@ -116,7 +116,7 @@ const creerEnteteVol = () => {
 };
 
 const creerLigneVol = (vols) => {
-    document.querySelector("#tbody").textContent = "";
+   
     vols.map(vol => {
         // Creation des elements
         var tr = document.createElement("tr")
@@ -370,63 +370,24 @@ const creerLigneHotel = (hotels) => {
     VerifieModification();
 };
 
-
-
-getHotels().then(hotels => {
-    creerLigneHotel(hotels)
-});
-
-
-document.querySelectorAll('.line')?.forEach(ligne => {
-
-    ligne.addEventListener("dblclick", () => {
-        var childElements = ligne.querySelectorAll('.textarea');
-        childElements.forEach(function (element) {
-            element.disabled = false;
-        });
-
-    })
-
-    ligne.addEventListener("mouseleave", () => {
-        var childElements = ligne.querySelectorAll('.textarea');
-        childElements.forEach(function (element) {
-            element.disabled = true;
-        });
-
-    })
-
-    ligne.querySelector('.modification').addEventListener("click", () => {
-        var childElements = ligne.querySelectorAll('.textarea');
-        childElements.forEach(function (element) {
-            element.disabled = false;
-        });
-
-    })
-}
-
-)
+var curentFonctions =getHotels();
+var curentTab='hotel';
 
 document.getElementById('vol_tab')?.addEventListener("click", () => {
     creerEnteteVol();
     document.querySelector("#tbody").textContent = "";
-    getVols().then(vols => {
-        creerLigneVol(vols);
-    });
+    curentFonctions=getVols();
+    curentTab='vol';
+    displayElements();
 })
 document.getElementById('hotel_tab')?.addEventListener("click", () => {
     creerEnteteHotel();
     document.querySelector("#tbody").textContent = "";
-    getHotels().then(hotels => {
-
-        creerLigneHotel(hotels);
-    });
+    curentFonctions=getHotels();
+    curentTab='hotel';
+    displayElements();
 })
-// document.getElementById('croisiere_tab')?.addEventListener("click",()=>{
-//     document.querySelector("#content").textContent="";
-//     getCroisieres().then(Croisieres => {
-//         creerCarteCroisiere(Croisieres)
-//     });
-// })
+
 
 
 
@@ -452,7 +413,6 @@ const VerifieSuppression = () => {
     })
 };
     
-document.querySelector("#tbody").textContent = "";
 const VerifieModification = () => {
     getModification().then(element => {
         for (const id of element) {
@@ -460,13 +420,61 @@ const VerifieModification = () => {
         }
     })
 };
-getHotels().then(hotels => {
-    document.querySelector("#tbody").textContent = "";
-    creerLigneHotel(hotels);
+
+
+const itemsPerPage = 5; // Nombre d'éléments à afficher par page
+let currentPage = 1; // Page actuelle, commence à 1
+let loading  = false; // Indicateur pour éviter les duplications de chargement
+
+async function displayElements() {
+  try {
+    
+    loading = true;
+    var elements = await curentFonctions;
+    var startIndex = (currentPage - 1) * itemsPerPage;
+    var endIndex = startIndex + itemsPerPage;
+
+    var elementsPerPage = elements.slice(startIndex, endIndex);
+
+    var tbody = document.getElementById('tbody');
+    if(curentTab==='hotel'){
+        creerLigneHotel(elementsPerPage);
+    }
+    if(curentTab==='vol'){
+        creerLigneVol(elementsPerPage);
+    }
+    
     VerifieSuppression();
     VerifieModification();
-});
+    loading = false;
 
+  } catch (error) {
+    console.error('Erreur lors de la récupération des hôtels :', error);
+    loading = false;
+  }
+}
 
+// Fonction pour charger plus d'éléments
+function loadMoreElements() {
+  if (!loading) {
+    currentPage++;
+    displayElements();
+  }
+}
 
+// Ajouter un gestionnaire d'événements scroll pour charger plus d'éléments lorsqu'on atteint le bas de la page
+document.querySelector('.shaped').addEventListener('scroll', function () {
+    var shapedElement = document.querySelector('.shaped');
+    var scrollOffset = shapedElement.scrollTop;
+    var windowHeight = shapedElement.clientHeight;
+    var fullHeight = shapedElement.scrollHeight;
+  
+    if (scrollOffset + windowHeight >= fullHeight) {
+      // Appeler la fonction pour charger plus d'éléments lorsque l'utilisateur atteint le bas de la page
+      loadMoreElements();
+    }
+  });
+
+// Appel initial pour afficher les hôtels sur la première page
+displayElements();
 
