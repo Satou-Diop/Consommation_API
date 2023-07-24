@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="assets/images/favicon.png" />
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   </head>
   <body>
     <div class="container-scroller">
@@ -218,6 +219,18 @@
               </div>
             </div>
           </div>
+          <div class="row">
+             
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Visualisation des données avec D3</h4>
+                  <svg id="chart" width="800" height="400"></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->
           <footer class="footer">
@@ -248,8 +261,9 @@
     <script src="assets/js/misc.js"></script>
     <!-- endinject -->
     <!-- Custom js for this page -->
-    <script src="assets/js/dashboard.js"></script>
+    <!-- <script src="assets/js/dashboard.js"></script> -->
     <script src="./assets/js/main1.js"></script>
+    <script src="./assets/js/d3_hotel.js"></script>
     <!-- End custom js for this page -->
   </body>
 </html>

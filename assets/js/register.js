@@ -48,12 +48,6 @@ function validateForm() {
       var lastName = document.getElementById("exampleInputLastName1").value;
       var email = document.getElementById("exampleInputEmail1").value;
       var password = document.getElementById("exampleInputPassword1").value;
-  
-      console.log("Prénom :", firstName);
-      console.log("Nom de famille :", lastName);
-      console.log("Email :", email);
-      console.log("Mot de passe :", password);
-  
       
     });
   });
@@ -70,10 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var email = document.getElementById("exampleInputEmail1").value;
       var mot_de_passe = document.getElementById("exampleInputPassword1").value;
   
-      console.log("Prénom :", prenom);
-      console.log("Nom de famille :", nom);
-      console.log("Email :", email);
-      console.log("Mot de passe :", mot_de_passe);
+
   
       // Vérification de l'email de l'utilisateur
       try {
@@ -95,9 +86,11 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             body: JSON.stringify(newUser)
           });
-  
           if (!postResponse.ok) {
             throw new Error('Erreur lors de l\'ajout de l\'utilisateur');
+          }
+          else{
+            window.location.href = 'login.html';
           }
     
       } catch (error) {
