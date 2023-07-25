@@ -10,7 +10,11 @@ const getInfoUser = async (token) => {
             body: token
         });
         const info = await response.json();
-        return info ;
+        if(response.ok){
+            return info ;
+        }
+        else return [] ;
+        
     } catch (error) {
         console.log('Une erreur s\'est produite lors de la recuperation :', error);
     }
@@ -48,7 +52,8 @@ const clean = ()=>{
     var info=[];
     if (accessToken) {  
         getInfoUser(accessToken).then(info=>{
-            if(!info){
+            
+            if(info.length===0){    
                 clean()
             }
             
